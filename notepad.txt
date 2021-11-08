@@ -1,0 +1,99 @@
+from tkinter import *
+from  tkinter.messagebox import showinfo
+from tkinter.filedialog import askopenfilename,asksaveasfilename
+import os
+
+if __name__ == '__main__':
+    def cut():
+        text.event_generate("<<Cut>>")
+
+    def copy():
+        text.event_generate("<<Copy>>")
+
+    def paste():
+        text.event_generate("<<Paste>>")
+
+    def dest():
+        root.destroy()
+
+    def about():
+        showinfo("NOTEPAD","THIS IS NOTEPAD MADE BY ME")
+
+    def newFile():
+        global file
+        root.title("Untitled - Notepad")
+        text.delete(1.0,END)
+
+    def openFile():
+        global  file
+
+        file=askopenfilename(defaultextension=".txt",filetypes=[("All Types","*.*"),("Text Document","*.txt")])
+
+        if file == "":
+            file=None
+
+        else:
+            root.title(os.path.basename(file) + " - Notepad")
+            text.delete(1.0,END)
+            f=open(file,"r")
+            text.insert(1.0,f.read())
+            f.close()
+
+    def saveFile():
+        global file
+        if file == None:
+            file=asksaveasfilename(initialfile="Untitled.txt",defaultextension=".txt",filetypes=[("All Files","*.*")
+                                                                ,("Text Document","*.txt")])
+            if file == "":
+                file =None
+            else:
+                f=open(file,"w")
+                f.write(text.get(1.0,END))
+                f.close()
+
+                root.title(os.path.basename(file)+" - Notepad")
+                print("saved")
+
+        else:
+            f=open(file,"w")
+            f.write(text.get(1.0,END))
+            f.close()
+
+
+
+
+
+
+
+    root=Tk()
+    root.title("THIS IS MY NOTEPAD")
+    root.geometry('644x700')
+
+    text=Text(root,font="lucida 15")
+    text.pack(fill=BOTH,expand=True)
+    file=None
+
+    mainmenu=Menu(root)
+    filemenu=Menu(mainmenu,tearoff=0)
+    filemenu.add_command(label="New", command=newFile)
+    filemenu.add_command(label="Open", command=openFile)
+    filemenu.add_command(label="Save", command=saveFile)
+    filemenu.add_separator()
+    filemenu.add_command(label="Exit", command=dest)
+    mainmenu.add_cascade(label="File",menu=filemenu)
+
+    editmenu=Menu(mainmenu,tearoff=0)
+    editmenu.add_command(label="Cut" , command=cut)
+    editmenu.add_command(label="Copy",command=copy)
+    editmenu.add_command(label="Paste", command=paste)
+
+
+    mainmenu.add_cascade(label="Edit",menu=editmenu)
+
+    helpmenu=Menu(mainmenu,tearoff=0)
+    helpmenu.add_command(label="About Notepad", command=about)
+    mainmenu.add_cascade(label="Help",menu=helpmenu)
+
+    root.config(menu=mainmenu)
+
+    root.mainloop()
